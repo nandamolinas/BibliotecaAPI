@@ -4,17 +4,17 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar o SQLite e o DbContext
+// LEMBRETE!!! Configurar o SQLite e o DbContext
 builder.Services.AddDbContext<BibliotecaContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-// Execute as migrações, se necessário
+// MIGRAÇÕES
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<BibliotecaContext>();
-    dbContext.Database.Migrate(); // Aplica migrações pendentes
+    dbContext.Database.Migrate(); // migrações pendentes
 }
 
 

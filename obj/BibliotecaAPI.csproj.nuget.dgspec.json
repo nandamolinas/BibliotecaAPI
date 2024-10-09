@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\phbah\\OneDrive\\Desktop\\Aulas github\\BibliotecaAPI\\BibliotecaAPI.csproj": {}
+    "C:\\Users\\phbah\\OneDrive\\Desktop\\Github\\BibliotecaAPI\\BibliotecaAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\phbah\\OneDrive\\Desktop\\Aulas github\\BibliotecaAPI\\BibliotecaAPI.csproj": {
+    "C:\\Users\\phbah\\OneDrive\\Desktop\\Github\\BibliotecaAPI\\BibliotecaAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\phbah\\OneDrive\\Desktop\\Aulas github\\BibliotecaAPI\\BibliotecaAPI.csproj",
+        "projectUniqueName": "C:\\Users\\phbah\\OneDrive\\Desktop\\Github\\BibliotecaAPI\\BibliotecaAPI.csproj",
         "projectName": "BibliotecaAPI",
-        "projectPath": "C:\\Users\\phbah\\OneDrive\\Desktop\\Aulas github\\BibliotecaAPI\\BibliotecaAPI.csproj",
+        "projectPath": "C:\\Users\\phbah\\OneDrive\\Desktop\\Github\\BibliotecaAPI\\BibliotecaAPI.csproj",
         "packagesPath": "C:\\Users\\phbah\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\phbah\\OneDrive\\Desktop\\Aulas github\\BibliotecaAPI\\obj\\",
+        "outputPath": "C:\\Users\\phbah\\OneDrive\\Desktop\\Github\\BibliotecaAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\phbah\\AppData\\Roaming\\NuGet\\NuGet.Config"
