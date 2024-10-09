@@ -1,0 +1,28 @@
+[33mcommit a6b92bdcf1fee8681593cc6011a21927adb40601[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Pedro Bahry <141736881+Bahryz@users.noreply.github.com>
+Date:   Tue Oct 8 15:01:18 2024 -0300
+
+    Criação inicial da tabela livros, banco de dados, e configurações iniciais (Pedro)
+    
+    envio p2
+
+[33mcommit fad4843923a1e97bad5756a9fa40be7018a2dfb5[m[33m ([m[1;31mupstream/master[m[33m)[m
+Merge: c510fd9 1982f98
+Author: nandamolinas <163006343+nandamolinas@users.noreply.github.com>
+Date:   Mon Oct 7 20:49:14 2024 -0300
+
+    Merge pull request #1 from nandamolinas/new-feature-branch
+    
+    Adicionando arquivos da solução e diretório Debug
+
+[33mcommit 1982f987ed809f4a3b8949ae895536934adeb6fb[m[33m ([m[1;31mupstream/new-feature-branch[m[33m, [m[1;31morigin/new-feature-branch[m[33m)[m
+Author: Nanda Molinas <nandamoly04@gmail.com>
+Date:   Mon Oct 7 20:38:28 2024 -0300
+
+    Adicionando arquivos da solução e diretório Debug
+
+[33mcommit c510fd97c4f928455a57910229fde6cf15436a4b[m
+Author: Nanda Molinas <nandamoly04@gmail.com>
+Date:   Mon Oct 7 20:14:33 2024 -0300
+
+    Primeiro Commit
