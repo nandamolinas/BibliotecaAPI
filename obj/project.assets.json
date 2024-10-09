@@ -2869,19 +2869,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\phbah\\.nuget\\packages\\": {}
+    "C:\\Users\\emanu\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\phbah\\OneDrive\\Desktop\\Github\\BibliotecaAPI\\BibliotecaAPI.csproj",
+      "projectUniqueName": "C:\\Users\\emanu\\OneDrive\\Área de Trabalho\\BibliotecaAPI\\BibliotecaAPI.csproj",
       "projectName": "BibliotecaAPI",
-      "projectPath": "C:\\Users\\phbah\\OneDrive\\Desktop\\Github\\BibliotecaAPI\\BibliotecaAPI.csproj",
-      "packagesPath": "C:\\Users\\phbah\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\phbah\\OneDrive\\Desktop\\Github\\BibliotecaAPI\\obj\\",
+      "projectPath": "C:\\Users\\emanu\\OneDrive\\Área de Trabalho\\BibliotecaAPI\\BibliotecaAPI.csproj",
+      "packagesPath": "C:\\Users\\emanu\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\emanu\\OneDrive\\Área de Trabalho\\BibliotecaAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\phbah\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\emanu\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -2950,7 +2950,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
