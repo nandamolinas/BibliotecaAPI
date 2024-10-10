@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\emanu\\OneDrive\\Área de Trabalho\\BibliotecaAPI\\BibliotecaAPI.csproj": {}
+    "C:\\_ws\\ProjetoBiblioteca\\BibliotecaAPI\\BibliotecaAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\emanu\\OneDrive\\Área de Trabalho\\BibliotecaAPI\\BibliotecaAPI.csproj": {
+    "C:\\_ws\\ProjetoBiblioteca\\BibliotecaAPI\\BibliotecaAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\emanu\\OneDrive\\Área de Trabalho\\BibliotecaAPI\\BibliotecaAPI.csproj",
+        "projectUniqueName": "C:\\_ws\\ProjetoBiblioteca\\BibliotecaAPI\\BibliotecaAPI.csproj",
         "projectName": "BibliotecaAPI",
-        "projectPath": "C:\\Users\\emanu\\OneDrive\\Área de Trabalho\\BibliotecaAPI\\BibliotecaAPI.csproj",
-        "packagesPath": "C:\\Users\\emanu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\emanu\\OneDrive\\Área de Trabalho\\BibliotecaAPI\\obj\\",
+        "projectPath": "C:\\_ws\\ProjetoBiblioteca\\BibliotecaAPI\\BibliotecaAPI.csproj",
+        "packagesPath": "C:\\Users\\5480\\.nuget\\packages\\",
+        "outputPath": "C:\\_ws\\ProjetoBiblioteca\\BibliotecaAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\emanu\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\5480\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -83,7 +83,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.403/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
