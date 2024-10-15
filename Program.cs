@@ -50,9 +50,37 @@ app.MapGet("/", ()=>"API de uma Biblioteca");
 // Manu
 // - Exclusão de Clientes
 // - Cadastro de Livros
+
+app.MapPost("/livros/cadastrar", ([FromBody] Livro novoLivro) =>
+{
+    if (livros.Any(l => l.Titulo == novoLivro.Titulo))
+    {
+        return Results.BadRequest("Um livro com esse título já existe.");
+    }
+
+    livros.Add(novoLivro);
+    return Results.Created($"/livros/{novoLivro.Titulo}", novoLivro);
+});
+
+
 // - Consulta de Livros
 
-// !!!! Pedro: manu já criei a tabela de livros na pasta models pra fazer a minha parte cria em cima disso!
+app.MapGet("/livros/listar", () =>
+{
+    return Results.Ok(livros);
+});
+
+app.MapGet("/livros/{titulo}", ([FromRoute] string titulo) =>
+{
+    var livro = livros.FirstOrDefault(l => l.Titulo == titulo);
+
+    if (livro == null)
+    {
+        return Results.NotFound("Livro não encontrado.");
+    }
+
+    return Results.Ok(livro);
+});
 
 // Guilherme
 // - Atualização de Dados de Livros
@@ -61,6 +89,21 @@ app.MapGet("/", ()=>"API de uma Biblioteca");
 
 // Pedro
 // - Registro de Devoluções
+
+app.MapPut("/devolucao/{titulo}", ([FromRoute] string titulo) =>
+{
+    var livro = livros.FirstOrDefault(
+        l => l.Titulo == titulo && l.DataDeEmprestimo != null && l.DataDeDevolução == null);
+
+    if (livro == null)
+    {
+        return Results.NotFound("O livro não foi encontrado ou já foi devolvido!!");
+    }
+
+    livro.DataDeEmprestimo = DateTime.Now.ToString("dd/MM/yyyy");
+    return Results.Ok($"A devolução do livro '{livro.Titulo}' foi registrada com sucesso!! ");
+});
+
 // - Consulta de Empréstimos Ativos
 // - Reservas de Livros
 
