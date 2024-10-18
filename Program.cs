@@ -15,31 +15,34 @@ var app = builder.Build();
 //     var dbContext = scope.ServiceProvider.GetRequiredService<BibliotecaContext>();
 //     dbContext.Database.Migrate(); // migrações pendentes
 // }
-
-List<Livro> livros=
-[
-           new Livro(){Titulo="Dom Quixote", Autor="Miguel de Cervantes", AnoDePublicacao = 1600, DataDeEmprestimo = null, DataDeDevolução = null },
-            new Livro(){Titulo="1984", Autor="George Orwell", AnoDePublicacao = 1949, DataDeEmprestimo = "10/09/2024", DataDeDevolução = "20/09/2024" },
-            new Livro(){Titulo="O Senhor dos Anéis", Autor="J.R.R. Tolkien", AnoDePublicacao = 1954, DataDeEmprestimo = "17/05/2024", DataDeDevolução = "30/05/2024"},
-            new Livro(){Titulo="Cem Anos de Solidão", Autor="Gabriel García Márquez", AnoDePublicacao = 1967, DataDeEmprestimo = null, DataDeDevolução = null },
-            new Livro(){Titulo="O Grande Gatsby", Autor="F. Scott Fitzgerald", AnoDePublicacao = 1925, DataDeEmprestimo = "20/03/2024", DataDeDevolução = "29/03/2024"},
-            new Livro(){Titulo="Orgulho e Preconceito", Autor="Jane Austen", AnoDePublicacao = 1813, DataDeEmprestimo = null, DataDeDevolução = null },
-            new Livro(){Titulo="Moby Dick", Autor="Herman Melville", AnoDePublicacao = 1851 , DataDeEmprestimo = null, DataDeDevolução = null},
-            new Livro(){Titulo="Guerra e Paz", Autor="Liev Tolstói", AnoDePublicacao = 1869 , DataDeEmprestimo = null, DataDeDevolução = null},
-            new Livro(){Titulo="Crime e Castigo", Autor="Fiódor Dostoiévski", AnoDePublicacao = 1866 , DataDeEmprestimo = null, DataDeDevolução = null},
-            new Livro(){Titulo="O Apanhador no Campo de Centeio", Autor="J.D. Salinger", AnoDePublicacao = 1951 , DataDeEmprestimo = null, DataDeDevolução = null}
-];
 List<Cliente> clientes=
 [
-    new Cliente() { Nome = "Maria Oliveira", Cpf = "123.456.789-00", DataDeInicio = new DateTime(2022, 5, 20) },
-    new Cliente() { Nome = "João Silva", Cpf = "987.654.321-11", DataDeInicio = new DateTime(2023, 1, 10) },
-    new Cliente() { Nome = "Ana Costa", Cpf = "321.654.987-22", DataDeInicio = new DateTime(2021, 9, 5) },
-    new Cliente() { Nome = "Pedro Santos", Cpf = "456.789.123-33", DataDeInicio = new DateTime(2020, 7, 15) },
-    new Cliente() { Nome = "Lucas Ferreira", Cpf = "654.321.987-44", DataDeInicio = new DateTime(2023, 3, 25) }
+    new Cliente() { ClienteId = 1, Nome = "Maria Oliveira", Cpf = "123.456.789-00", DataDeInicio = new DateTime(2022, 5, 20) },
+    new Cliente() { ClienteId = 2,Nome = "João Silva", Cpf = "987.654.321-11", DataDeInicio = new DateTime(2023, 1, 10) },
+    new Cliente() { ClienteId = 3,Nome = "Ana Costa", Cpf = "321.654.987-22", DataDeInicio = new DateTime(2021, 9, 5) },
+    new Cliente() { ClienteId = 4,Nome = "Pedro Santos", Cpf = "456.789.123-33", DataDeInicio = new DateTime(2020, 7, 15) },
+    new Cliente() { ClienteId = 5,Nome = "Lucas Ferreira", Cpf = "654.321.987-44", DataDeInicio = new DateTime(2023, 3, 25) }
 
+];
+List<Livro> livros=
+[
+           new Livro(){Titulo="Dom Quixote", Autor="Miguel de Cervantes", AnoDePublicacao = 1600, DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null },
+            new Livro(){Titulo="1984", Autor="George Orwell", AnoDePublicacao = 1949, DataDeEmprestimo = "10/09/2024", DataDeDevolucao = "20/09/2024", Cliente = buscarPeloId(1) },
+            new Livro(){Titulo="O Senhor dos Anéis", Autor="J.R.R. Tolkien", AnoDePublicacao = 1954, DataDeEmprestimo = "17/05/2024",DataDeDevolucao = "30/05/2024", Cliente = buscarPeloId(2)},
+            new Livro(){Titulo="Cem Anos de Solidão", Autor="Gabriel García Márquez", AnoDePublicacao = 1967, DataDeEmprestimo = null, DataDeDevolucao = null },
+            new Livro(){Titulo="O Grande Gatsby", Autor="F. Scott Fitzgerald", AnoDePublicacao = 1925, DataDeEmprestimo = "20/03/2024", DataDeDevolucao = "29/03/2024",Cliente = buscarPeloId(3)},
+            new Livro(){Titulo="Orgulho e Preconceito", Autor="Jane Austen", AnoDePublicacao = 1813, DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null },
+            new Livro(){Titulo="Moby Dick", Autor="Herman Melville", AnoDePublicacao = 1851 , DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null},
+            new Livro(){Titulo="Guerra e Paz", Autor="Liev Tolstói", AnoDePublicacao = 1869 , DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null},
+            new Livro(){Titulo="Crime e Castigo", Autor="Fiódor Dostoiévski", AnoDePublicacao = 1866 , DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null},
+            new Livro(){Titulo="O Apanhador no Campo de Centeio", Autor="J.D. Salinger", AnoDePublicacao = 1951 , DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null}
 ];
 
 app.MapGet("/", ()=>"API de uma Biblioteca");
+
+Cliente? buscarPeloId(int clienteId){
+    return clientes.Find(x => x.ClienteId == clienteId);
+}
 
 
 // Maria
@@ -51,7 +54,7 @@ app.MapGet("/", ()=>"API de uma Biblioteca");
 // - Exclusão de Clientes
 // - Cadastro de Livros
 
-app.MapPost("/livros/cadastrar", ([FromBody] Livro novoLivro) =>
+app.MapPost("/api/livros/cadastrar", ([FromBody] Livro novoLivro) =>
 {
     if (livros.Any(l => l.Titulo == novoLivro.Titulo))
     {
@@ -65,12 +68,13 @@ app.MapPost("/livros/cadastrar", ([FromBody] Livro novoLivro) =>
 
 // - Consulta de Livros
 
-app.MapGet("/livros/listar", () =>
+app.MapGet("/api/livros/listar", () =>
 {
     return Results.Ok(livros);
 });
+//Buscar Livros
 
-app.MapGet("/livros/{titulo}", ([FromRoute] string titulo) =>
+app.MapGet("/api/livros/{titulo}", ([FromRoute] string titulo) =>
 {
     var livro = livros.FirstOrDefault(l => l.Titulo == titulo);
 
@@ -84,23 +88,75 @@ app.MapGet("/livros/{titulo}", ([FromRoute] string titulo) =>
 
 // Guilherme
 // - Atualização de Dados de Livros
+app.MapPut("/api/atualizar/{NomeLivro}",([FromRoute] string NomeLivro, [FromBody] Livro livroAlterado)=>
+{
+    Livro? livro= livros.Find(x => x.Titulo == NomeLivro);
+    if(livro == null){
+        return Results.NotFound();
+    }
+    livro.Titulo = livroAlterado.Titulo;
+    livro.Autor = livroAlterado.Autor;
+    livro.AnoDePublicacao = livroAlterado.AnoDePublicacao;
+    livro.DataDeEmprestimo = livroAlterado.DataDeEmprestimo;
+    livro.DataDeDevolucao = livroAlterado.DataDeDevolucao;
+    livro.Cliente = livro.Cliente;
+    return Results.Ok(livro);
+});
+
+
 // - Exclusão de Livros
+app.MapDelete("/api/deletar/{nomeLivro}",([FromRoute] string nomeLivro)=>
+{
+    Livro? livro = livros.Find(x => x.Titulo == nomeLivro);
+     if(livro == null){
+        return Results.NotFound();
+    }
+    livros.Remove(livro);
+    return Results.Ok(livro);
+});
+
 // - Registro de Empréstimos
+app.MapPut("/api/registraEmprestimo/{nomeLivro}/{EmprestimoCliente}", ([FromRoute] string nomeLivro, [FromRoute] string EmprestimoCliente, [FromBody] Livro livroAlterado) =>
+{
+    Livro? livro = livros.Find(x => x.Titulo == nomeLivro);
+    Cliente? cliente = clientes.Find(c => c.Nome == EmprestimoCliente);
+    
+    if (cliente == null)
+    {
+        return Results.NotFound("Cliente não cadastrado");
+    }
+    if (livro == null)
+    {
+        return Results.NotFound();
+    }
+    if (livro.DataDeEmprestimo != null)
+    {
+        return Results.BadRequest("O livro já foi emprestado");
+    }
+
+    livro.DataDeEmprestimo = DateTime.Now.ToString(); // Atribuição direta, se DataDeEmprestimo for DateTime
+    livro.DataDeDevolucao = livroAlterado.DataDeDevolucao; // Verifique o nome
+    livro.Cliente = cliente; // Usar cliente diretamente
+
+    return Results.Ok(livro);
+});
+
+
 
 // Pedro
 // - Registro de Devoluções
 
-app.MapPut("/devolucao/{titulo}", ([FromRoute] string titulo) =>
+app.MapPut("/api/devolucao/{titulo}", ([FromRoute] string titulo) =>
 {
     var livro = livros.FirstOrDefault(
-        l => l.Titulo == titulo && l.DataDeEmprestimo != null && l.DataDeDevolução == null);
+        l => l.Titulo == titulo && l.DataDeEmprestimo != null && l.DataDeDevolucao == null);
 
     if (livro == null)
     {
         return Results.NotFound("O livro não foi encontrado ou já foi devolvido!!");
     }
 
-    livro.DataDeEmprestimo = DateTime.Now.ToString("dd/MM/yyyy");
+    livro.DataDeDevolucao = DateTime.Now.ToString("dd/MM/yyyy");
     return Results.Ok($"A devolução do livro '{livro.Titulo}' foi registrada com sucesso!! ");
 });
 
