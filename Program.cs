@@ -50,9 +50,51 @@ Cliente? buscarPeloId(int clienteId){
 // - Consulta de Clientes
 // - Atualização de Dados de Clientes
 
-// Manu
-// - Exclusão de Clientes
-// - Cadastro de Livros
+// Manu parte 1 : Exclusao dos Clientes
+// Rota para deletar um cliente
+
+app.MapDelete("/api/clientes/excluir/{clienteId}", ([FromRoute] int clienteId) =>
+{
+    // Busca o cliente pelo ID
+    Cliente? cliente = buscarPeloId(clienteId);
+    
+    if (cliente == null)
+    {
+        return Results.NotFound("Cliente não encontrado.");
+    }
+
+    // Verifica se o cliente tem livros emprestados
+    var livrosEmprestados = livros.Where(l => l.Cliente?.ClienteId == clienteId && l.DataDeEmprestimo != null && l.DataDeDevolucao == null).ToList();
+
+    if (livrosEmprestados.Any())
+    {
+        return Results.BadRequest("O cliente possui livros emprestados e não pode ser excluído antes de devolver os livros.");
+    }
+
+    // Remove o cliente da lista de clientes
+    clientes.Remove(cliente);
+    return Results.Ok($"Cliente {cliente.Nome} excluído com sucesso.");
+});
+//Manu parte 2: Cadastro de Livros
+app.MapPost("/api/livros/cadastrar", ([FromBody] Livro novoLivro) =>
+{
+    // Verifica se já existe um livro com o mesmo título
+    if (livros.Any(l => l.Titulo == novoLivro.Titulo))
+    {
+        return Results.BadRequest("Um livro com esse título já existe.");
+    }
+
+    // Adiciona o novo livro à lista
+    livros.Add(novoLivro);
+    return Results.Created($"/livros/{novoLivro.Titulo}", novoLivro);
+});
+//fim da minha parte
+app.MapGet("/api/livros/listar", () =>
+{
+    return Results.Ok(livros);
+});
+
+
 
 app.MapPost("/api/livros/cadastrar", ([FromBody] Livro novoLivro) =>
 {

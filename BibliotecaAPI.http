@@ -6,6 +6,12 @@ http://localhost:5200
 // - Atualização de Dados de Clientes Pendete
 // Manu
 // - Exclusão de Clientes Pendete
+DELETE http://localhost:5200/api/clientes/excluir/1
+DELETE  http://localhost:5200/api/clientes/excluir/2
+DELETE http://localhost:5200/api/clientes/excluir/3
+DELETE http://localhost:5200/api/clientes/excluir/4
+DELETE http://localhost:5200/api/clientes/excluir/5
+
 ### Cadastro de Livros
 POST http://localhost:5200/api/livros/cadastrar
 Content-Type: application/json
