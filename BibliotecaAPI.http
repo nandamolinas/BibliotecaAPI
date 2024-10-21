@@ -7,11 +7,12 @@ POST http://localhost:5200/api/clientes/cadastrar
 Content-Type: application/json
 
 {
-    "clienteId": 6,
+    "clienteId": 30,
     "nome": "Carlos Mendes",
-    "cpf": "555.555.555-55",
+    "cpf": "223.255.555-55",
     "dataDeInicio": "2024-10-20"
 }
+
 
 
 ### - Consulta de Clientes 
@@ -37,9 +38,9 @@ POST http://localhost:5200/api/livros/cadastrar
 Content-Type: application/json
 
 {
-    "titulo": "Diário de Um Banana",
-    "autor": "Jeff Kinney",
-    "anoDePublicacao": 2004,
+    "titulo": "Teste1",
+    "autor": "Teste1",
+    "anoDePublicacao": 2002,
     "dataDeEmprestimo": null,
     "dataDeDevolucao": null
 }
@@ -73,10 +74,10 @@ POST http://localhost:5200/api/emprestimos/cadastrar
 Content-Type: application/json
 
 {
-    "IdLivro": 2,
-    "ClienteId": 6,
+    "IdLivro": 4,
+    "ClienteId": 12,
     "DataDeEmprestimo": "2024-10-19",
-    "DataDeDevolucao": "2024-10-19"
+    "DataDeDevolucao": "2024-10-23"
 }
 
  
@@ -85,7 +86,7 @@ POST http://localhost:5200/api/emprestimos/devolver
 Content-Type: application/json
 
 {
-    "IdEmprestimo": 1
+    "IdLivro": 3
 }
 
 
@@ -95,5 +96,4 @@ GET http://localhost:5200/api/emprestimos/ativos
 
 
 
-### - // - Reservas de Livros
-GET http://localhost:5200/api/livros/reservas
+

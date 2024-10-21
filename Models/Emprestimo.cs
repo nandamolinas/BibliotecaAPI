@@ -1,8 +1,13 @@
-public class Emprestimo
+using System;
+
+namespace BibliotecaAPI.Models
 {
-    public int IdEmprestimo { get; set; }
-    public string Titulo { get; set; }
-    public string ClienteNome { get; set; }
-    public DateTime? DataDeEmprestimo { get; set; }
-    public DateTime? DataDeDevolucao { get; set; }
+    public class Emprestimo
+    {
+        public int IdEmprestimo { get; set; }
+        public int ClienteId { get; set; } // Referência ao Cliente
+        public int IdLivro { get; set; } // Referência ao Livro
+        public DateTime DataDeEmprestimo { get; set; } // Data do Empréstimo
+        public DateTime DataDeDevolucao { get; set; } // Data da Devolução
+    }
 }
