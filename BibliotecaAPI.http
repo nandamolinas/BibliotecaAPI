@@ -1,63 +1,99 @@
 ### Requisição para a raiz da aplicação
 http://localhost:5200
-// Maria
-// - Cadastro de Clientes Pendete
-// - Consulta de Clientes Pendete
-// - Atualização de Dados de Clientes Pendete
-// Manu
-// - Exclusão de Clientes Pendete
+
+
+### - Cadastro de Clientes 
+POST http://localhost:5200/api/clientes/cadastrar
+Content-Type: application/json
+
+{
+    "clienteId": 6,
+    "nome": "Carlos Mendes",
+    "cpf": "555.555.555-55",
+    "dataDeInicio": "2024-10-20"
+}
+
+
+### - Consulta de Clientes 
+GET http://localhost:5200/api/clientes/listar
+
+### - Atualização de Dados de Clientes 
+PUT http://localhost:5200/api/clientes/atualizar/1
+Content-Type: application/json
+
+{
+    "nome": "Maria Oliveira Silva",
+    "cpf": "123.456.789-00",
+    "dataDeInicio": "2022-05-20"
+}
+
+
+### - Exclusão de Clientes 
 DELETE http://localhost:5200/api/clientes/excluir/1
-DELETE  http://localhost:5200/api/clientes/excluir/2
-DELETE http://localhost:5200/api/clientes/excluir/3
-DELETE http://localhost:5200/api/clientes/excluir/4
-DELETE http://localhost:5200/api/clientes/excluir/5
+
 
 ### Cadastro de Livros
 POST http://localhost:5200/api/livros/cadastrar
 Content-Type: application/json
 
 {
-    "titulo" : "Diario de Um Banana",
-    "autor" : "Jeff Kinney",
-    "publicação" : 1982,
-    "dataDeEmprestimo" : null,
-    "dataDeDevolução" : null
+    "titulo": "Diário de Um Banana",
+    "autor": "Jeff Kinney",
+    "anoDePublicacao": 2004,
+    "dataDeEmprestimo": null,
+    "dataDeDevolucao": null
 }
 
+
 ### Consulta de Livros
-GEt http://localhost:5200/api/livros/listar
+GET http://localhost:5200/api/livros/listar
 
 ### Buscar Livros
-GEt http://localhost:5200/api/livros/1984
-//Guilherme
+GET http://localhost:5200/api/livros/1984
+
+// Guilherme
 ### Atualização de Dados de Livros
-PUT http://localhost:5200/api/atualizar/Dom%20Quixote
+PUT http://localhost:5200/api/livros/atualizar/Dom%20Quixote
 Content-Type: application/json
 
 {
     "titulo": "Dom Quixote",
-    "autor": "Albert Einstein",
-    "anoDePublicacao": 1400,
+    "autor": "Miguel de Cervantes",
+    "anoDePublicacao": 1605,
     "dataDeEmprestimo": null,
     "dataDeDevolucao": null,
     "cliente": null
 }
 
-
-
 ### Exclusão de Livro
-DELETE http://localhost:5200/api/deletar/Dom%20Quixote
+DELETE http://localhost:5200/api/livros/deletar/Dom%20Quixote
 
-### - Resgistro De Emprestimo
-PUT http://localhost:5200/api/registraEmprestimo/Crime%20e%20Castigo/Ana%20Costa
+### - Registro De Empréstimo
+POST http://localhost:5200/api/emprestimos/cadastrar
 Content-Type: application/json
 
 {
-    "DataDeDevolucao" : "19/10/2024"
+    "IdLivro": 2,
+    "ClienteId": 6,
+    "DataDeEmprestimo": "2024-10-19",
+    "DataDeDevolucao": "2024-10-19"
 }
-// Pedro 
-// - Registro de Devoluções} precisa colocar a URL da requisição
-// - Consulta de Empréstimos Ativos Pendente
-// - Reservas de Livros Pendente
+
+ 
+### - // - Registro de Devoluções 
+POST http://localhost:5200/api/emprestimos/devolver
+Content-Type: application/json
+
+{
+    "IdEmprestimo": 1
+}
 
 
+
+### - // - Consulta de Empréstimos Ativos 
+GET http://localhost:5200/api/emprestimos/ativos
+
+
+
+### - // - Reservas de Livros
+GET http://localhost:5200/api/livros/reservas

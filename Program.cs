@@ -1,124 +1,149 @@
-
 using BibliotecaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure o DbContext
+builder.Services.AddDbContext<AppDataContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
-// LEMBRETE!!! Configurar o SQLite e o DbContext
-// builder.Services.AddDbContext<BibliotecaContext>(options =>
-//     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// // MIGRAÇÕES
-// using (var scope = app.Services.CreateScope())
-// {
-//     var dbContext = scope.ServiceProvider.GetRequiredService<BibliotecaContext>();
-//     dbContext.Database.Migrate(); // migrações pendentes
-// }
-List<Cliente> clientes=
-[
-    new Cliente() { ClienteId = 1, Nome = "Maria Oliveira", Cpf = "123.456.789-00", DataDeInicio = new DateTime(2022, 5, 20) },
-    new Cliente() { ClienteId = 2,Nome = "João Silva", Cpf = "987.654.321-11", DataDeInicio = new DateTime(2023, 1, 10) },
-    new Cliente() { ClienteId = 3,Nome = "Ana Costa", Cpf = "321.654.987-22", DataDeInicio = new DateTime(2021, 9, 5) },
-    new Cliente() { ClienteId = 4,Nome = "Pedro Santos", Cpf = "456.789.123-33", DataDeInicio = new DateTime(2020, 7, 15) },
-    new Cliente() { ClienteId = 5,Nome = "Lucas Ferreira", Cpf = "654.321.987-44", DataDeInicio = new DateTime(2023, 3, 25) }
+// Inicialização de Dados
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDataContext>();
+    db.Database.EnsureCreated();
 
-];
-List<Livro> livros=
-[
-           new Livro(){Titulo="Dom Quixote", Autor="Miguel de Cervantes", AnoDePublicacao = 1600, DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null },
-            new Livro(){Titulo="1984", Autor="George Orwell", AnoDePublicacao = 1949, DataDeEmprestimo = "10/09/2024", DataDeDevolucao = "20/09/2024", Cliente = buscarPeloId(1) },
-            new Livro(){Titulo="O Senhor dos Anéis", Autor="J.R.R. Tolkien", AnoDePublicacao = 1954, DataDeEmprestimo = "17/05/2024",DataDeDevolucao = "30/05/2024", Cliente = buscarPeloId(2)},
-            new Livro(){Titulo="Cem Anos de Solidão", Autor="Gabriel García Márquez", AnoDePublicacao = 1967, DataDeEmprestimo = null, DataDeDevolucao = null },
-            new Livro(){Titulo="O Grande Gatsby", Autor="F. Scott Fitzgerald", AnoDePublicacao = 1925, DataDeEmprestimo = "20/03/2024", DataDeDevolucao = "29/03/2024",Cliente = buscarPeloId(3)},
-            new Livro(){Titulo="Orgulho e Preconceito", Autor="Jane Austen", AnoDePublicacao = 1813, DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null },
-            new Livro(){Titulo="Moby Dick", Autor="Herman Melville", AnoDePublicacao = 1851 , DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null},
-            new Livro(){Titulo="Guerra e Paz", Autor="Liev Tolstói", AnoDePublicacao = 1869 , DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null},
-            new Livro(){Titulo="Crime e Castigo", Autor="Fiódor Dostoiévski", AnoDePublicacao = 1866 , DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null},
-            new Livro(){Titulo="O Apanhador no Campo de Centeio", Autor="J.D. Salinger", AnoDePublicacao = 1951 , DataDeEmprestimo = null, DataDeDevolucao = null, Cliente=null}
-];
+    // Verifica se a tabela de Clientes está vazia
+    if (!db.Clientes.Any())
+    {
+        List<Cliente> clientes = new List<Cliente>
+        {
+            new Cliente() { ClienteId = 1, Nome = "Maria Oliveira", Cpf = "123.456.789-00", DataDeInicio = new DateTime(2022, 5, 20) },
+            new Cliente() { ClienteId = 2, Nome = "João Silva", Cpf = "987.654.321-11", DataDeInicio = new DateTime(2023, 1, 10) },
+            new Cliente() { ClienteId = 3, Nome = "Ana Costa", Cpf = "321.654.987-22", DataDeInicio = new DateTime(2021, 9, 5) },
+            new Cliente() { ClienteId = 4, Nome = "Pedro Santos", Cpf = "456.789.123-33", DataDeInicio = new DateTime(2020, 7, 15) },
+            new Cliente() { ClienteId = 5, Nome = "Lucas Ferreira", Cpf = "654.321.987-44", DataDeInicio = new DateTime(2023, 3, 25) }
+        };
 
-app.MapGet("/", ()=>"API de uma Biblioteca");
+        List<Livro> livros = new List<Livro>
+        {
+            new Livro() { IdLivro = 1, Titulo = "Dom Quixote", Autor = "Miguel de Cervantes", AnoDePublicacao = 1600, DataDeEmprestimo = null, DataDeDevolucao = null },
+            new Livro() { IdLivro = 2, Titulo = "1984", Autor = "George Orwell", AnoDePublicacao = 1949, DataDeEmprestimo = DateTime.Now.AddDays(-10), DataDeDevolucao = DateTime.Now.AddDays(10), ClienteId = 1 },
+            new Livro() { IdLivro = 3, Titulo = "O Senhor dos Anéis", Autor = "J.R.R. Tolkien", AnoDePublicacao = 1954, DataDeEmprestimo = DateTime.Now.AddDays(-7), DataDeDevolucao = DateTime.Now.AddDays(7), ClienteId = 2 },
+            new Livro() { IdLivro = 4, Titulo = "Cem Anos de Solidão", Autor = "Gabriel García Márquez", AnoDePublicacao = 1967, DataDeEmprestimo = null, DataDeDevolucao = null },
+            new Livro() { IdLivro = 5, Titulo = "O Grande Gatsby", Autor = "F. Scott Fitzgerald", AnoDePublicacao = 1925, DataDeEmprestimo = DateTime.Now.AddDays(-20), DataDeDevolucao = DateTime.Now.AddDays(10), ClienteId = 3 },
+            new Livro() { IdLivro = 6, Titulo = "Orgulho e Preconceito", Autor = "Jane Austen", AnoDePublicacao = 1813, DataDeEmprestimo = null, DataDeDevolucao = null },
+            new Livro() { IdLivro = 7, Titulo = "Moby Dick", Autor = "Herman Melville", AnoDePublicacao = 1851, DataDeEmprestimo = null, DataDeDevolucao = null },
+            new Livro() { IdLivro = 8, Titulo = "Guerra e Paz", Autor = "Liev Tolstói", AnoDePublicacao = 1869, DataDeEmprestimo = null, DataDeDevolucao = null },
+            new Livro() { IdLivro = 9, Titulo = "Crime e Castigo", Autor = "Fiódor Dostoiévski", AnoDePublicacao = 1866, DataDeEmprestimo = null, DataDeDevolucao = null },
+            new Livro() { IdLivro = 10, Titulo = "O Apanhador no Campo de Centeio", Autor = "J.D. Salinger", AnoDePublicacao = 1951, DataDeEmprestimo = null, DataDeDevolucao = null }
+        };
 
-Cliente? buscarPeloId(int clienteId){
-    return clientes.Find(x => x.ClienteId == clienteId);
+        db.Clientes.AddRange(clientes);
+        db.Livros.AddRange(livros);
+        db.SaveChanges();
+    }
 }
 
+// Cadastro de Livros
+app.MapPost("/api/livros/cadastrar", async ([FromBody] Livro novoLivro, AppDataContext db) =>
+{
+    if (await db.Livros.AnyAsync(l => l.Titulo == novoLivro.Titulo))
+    {
+        return Results.BadRequest("Um livro com esse título já existe.");
+    }
 
-// Maria
-// - Cadastro de Clientes
-// - Consulta de Clientes
-// - Atualização de Dados de Clientes
+    await db.Livros.AddAsync(novoLivro);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/livros/{novoLivro.Titulo}", novoLivro);
+});
 
-// Manu parte 1 : Exclusao dos Clientes
-// Rota para deletar um cliente
+// Listar Livros
+app.MapGet("/api/livros/listar", async (AppDataContext db) =>
+{
+    return Results.Ok(await db.Livros.ToListAsync());
+});
 
-app.MapDelete("/api/clientes/excluir/{clienteId}", ([FromRoute] int clienteId) =>
+// Atualização de Dados de Livros
+app.MapPut("/api/livros/atualizar/{titulo}", async ([FromRoute] string titulo, [FromBody] Livro livroAlterado, AppDataContext db) =>
+{
+    Livro? livro = await db.Livros.FirstOrDefaultAsync(l => l.Titulo == titulo);
+
+    if (livro == null)
+    {
+        return Results.NotFound("Livro não encontrado.");
+    }
+
+    livro.Titulo = livroAlterado.Titulo;
+    livro.Autor = livroAlterado.Autor;
+    livro.AnoDePublicacao = livroAlterado.AnoDePublicacao;
+    livro.DataDeEmprestimo = livroAlterado.DataDeEmprestimo;
+    livro.DataDeDevolucao = livroAlterado.DataDeDevolucao;
+
+    await db.SaveChangesAsync();
+    return Results.Ok(livro);
+});
+
+
+
+// Rotas
+app.MapGet("/", () => "API de uma Biblioteca");
+
+// Exclusão de Clientes
+app.MapDelete("/api/clientes/excluir/{clienteId}", async ([FromRoute] int clienteId, AppDataContext db) =>
 {
     // Busca o cliente pelo ID
-    Cliente? cliente = buscarPeloId(clienteId);
-    
+    Cliente? cliente = await db.Clientes.FindAsync(clienteId);
+
     if (cliente == null)
     {
         return Results.NotFound("Cliente não encontrado.");
     }
 
     // Verifica se o cliente tem livros emprestados
-    var livrosEmprestados = livros.Where(l => l.Cliente?.ClienteId == clienteId && l.DataDeEmprestimo != null && l.DataDeDevolucao == null).ToList();
+    var livrosEmprestados = await db.Livros
+        .Where(l => l.ClienteId == clienteId && l.DataDeEmprestimo != null && l.DataDeDevolucao == null)
+        .ToListAsync();
 
     if (livrosEmprestados.Any())
     {
         return Results.BadRequest("O cliente possui livros emprestados e não pode ser excluído antes de devolver os livros.");
     }
 
-    // Remove o cliente da lista de clientes
-    clientes.Remove(cliente);
+    // Remove o cliente do banco de dados
+    db.Clientes.Remove(cliente);
+    await db.SaveChangesAsync();
     return Results.Ok($"Cliente {cliente.Nome} excluído com sucesso.");
 });
-//Manu parte 2: Cadastro de Livros
-app.MapPost("/api/livros/cadastrar", ([FromBody] Livro novoLivro) =>
+
+// Cadastro de Clientes
+app.MapPost("/api/clientes/cadastrar", async ([FromBody] Cliente novoCliente, AppDataContext db) =>
 {
-    // Verifica se já existe um livro com o mesmo título
-    if (livros.Any(l => l.Titulo == novoLivro.Titulo))
+    if (await db.Clientes.AnyAsync(c => c.Cpf == novoCliente.Cpf))
     {
-        return Results.BadRequest("Um livro com esse título já existe.");
+        return Results.BadRequest("Já existe um cliente com esse CPF.");
     }
 
-    // Adiciona o novo livro à lista
-    livros.Add(novoLivro);
-    return Results.Created($"/livros/{novoLivro.Titulo}", novoLivro);
-});
-//fim da minha parte
-app.MapGet("/api/livros/listar", () =>
-{
-    return Results.Ok(livros);
+    await db.Clientes.AddAsync(novoCliente);
+    await db.SaveChangesAsync();
+    return Results.Created($"/api/clientes/{novoCliente.ClienteId}", novoCliente);
 });
 
 
-
-app.MapPost("/api/livros/cadastrar", ([FromBody] Livro novoLivro) =>
+// Listar Clientes
+app.MapGet("/api/clientes/listar", async (AppDataContext db) =>
 {
-    if (livros.Any(l => l.Titulo == novoLivro.Titulo))
-    {
-        return Results.BadRequest("Um livro com esse título já existe.");
-    }
-
-    livros.Add(novoLivro);
-    return Results.Created($"/livros/{novoLivro.Titulo}", novoLivro);
+    return Results.Ok(await db.Clientes.ToListAsync());
 });
 
 
-// - Consulta de Livros
-
-app.MapGet("/api/livros/listar", () =>
+// Buscar Livros
+app.MapGet("/api/livros/{titulo}", async ([FromRoute] string titulo, AppDataContext db) =>
 {
-    return Results.Ok(livros);
-});
-//Buscar Livros
-
-app.MapGet("/api/livros/{titulo}", ([FromRoute] string titulo) =>
-{
-    var livro = livros.FirstOrDefault(l => l.Titulo == titulo);
+    var livro = await db.Livros.FirstOrDefaultAsync(l => l.Titulo == titulo);
 
     if (livro == null)
     {
@@ -128,81 +153,107 @@ app.MapGet("/api/livros/{titulo}", ([FromRoute] string titulo) =>
     return Results.Ok(livro);
 });
 
-// Guilherme
-// - Atualização de Dados de Livros
-app.MapPut("/api/atualizar/{NomeLivro}",([FromRoute] string NomeLivro, [FromBody] Livro livroAlterado)=>
+// Atualização de Dados de Clientes
+app.MapPut("/api/clientes/atualizar/{clienteId}", async ([FromRoute] int clienteId, [FromBody] Cliente clienteAlterado, AppDataContext db) =>
 {
-    Livro? livro= livros.Find(x => x.Titulo == NomeLivro);
-    if(livro == null){
-        return Results.NotFound();
-    }
-    livro.Titulo = livroAlterado.Titulo;
-    livro.Autor = livroAlterado.Autor;
-    livro.AnoDePublicacao = livroAlterado.AnoDePublicacao;
-    livro.DataDeEmprestimo = livroAlterado.DataDeEmprestimo;
-    livro.DataDeDevolucao = livroAlterado.DataDeDevolucao;
-    livro.Cliente = livro.Cliente;
-    return Results.Ok(livro);
-});
+    Cliente? cliente = await db.Clientes.FindAsync(clienteId);
 
-
-// - Exclusão de Livros
-app.MapDelete("/api/deletar/{nomeLivro}",([FromRoute] string nomeLivro)=>
-{
-    Livro? livro = livros.Find(x => x.Titulo == nomeLivro);
-     if(livro == null){
-        return Results.NotFound();
-    }
-    livros.Remove(livro);
-    return Results.Ok(livro);
-});
-
-// - Registro de Empréstimos
-app.MapPut("/api/registraEmprestimo/{nomeLivro}/{EmprestimoCliente}", ([FromRoute] string nomeLivro, [FromRoute] string EmprestimoCliente, [FromBody] Livro livroAlterado) =>
-{
-    Livro? livro = livros.Find(x => x.Titulo == nomeLivro);
-    Cliente? cliente = clientes.Find(c => c.Nome == EmprestimoCliente);
-    
     if (cliente == null)
     {
-        return Results.NotFound("Cliente não cadastrado");
-    }
-    if (livro == null)
-    {
-        return Results.NotFound();
-    }
-    if (livro.DataDeEmprestimo != null)
-    {
-        return Results.BadRequest("O livro já foi emprestado");
+        return Results.NotFound("Cliente não encontrado.");
     }
 
-    livro.DataDeEmprestimo = DateTime.Now.ToString(); // Atribuição direta, se DataDeEmprestimo for DateTime
-    livro.DataDeDevolucao = livroAlterado.DataDeDevolucao; // Verifique o nome
-    livro.Cliente = cliente; // Usar cliente diretamente
+    cliente.Nome = clienteAlterado.Nome;
+    cliente.Cpf = clienteAlterado.Cpf;
+    cliente.DataDeInicio = clienteAlterado.DataDeInicio;
 
-    return Results.Ok(livro);
+    await db.SaveChangesAsync();
+    return Results.Ok(cliente);
 });
 
 
-
-// Pedro
-// - Registro de Devoluções
-
-app.MapPut("/api/devolucao/{titulo}", ([FromRoute] string titulo) =>
+// Exclusão de Livros
+app.MapDelete("/api/livros/deletar/{titulo}", async ([FromRoute] string titulo, AppDataContext db) =>
 {
-    var livro = livros.FirstOrDefault(
-        l => l.Titulo == titulo && l.DataDeEmprestimo != null && l.DataDeDevolucao == null);
+    Livro? livro = await db.Livros.FirstOrDefaultAsync(l => l.Titulo == titulo);
 
     if (livro == null)
     {
-        return Results.NotFound("O livro não foi encontrado ou já foi devolvido!!");
+        return Results.NotFound("Livro não encontrado.");
     }
 
-    livro.DataDeDevolucao = DateTime.Now.ToString("dd/MM/yyyy");
-    return Results.Ok($"A devolução do livro '{livro.Titulo}' foi registrada com sucesso!! ");
+    db.Livros.Remove(livro);
+    await db.SaveChangesAsync();
+    return Results.Ok($"Livro '{livro.Titulo}' excluído com sucesso.");
 });
 
-// - Consulta de Empréstimos Ativos
-// - Reservas de Livros
 
+// Cadastro de Empréstimos
+app.MapPost("/api/emprestimos/cadastrar", async ([FromBody] Emprestimo novoEmprestimo, AppDataContext db) =>
+{
+    var livro = await db.Livros.FirstOrDefaultAsync(l => l.Titulo == novoEmprestimo.Titulo);
+    var cliente = await db.Clientes.FirstOrDefaultAsync(c => c.Nome == novoEmprestimo.ClienteNome);
+
+    if (livro == null)
+    {
+        return Results.NotFound("Livro não encontrado.");
+    }
+
+    if (cliente == null)
+    {
+        return Results.NotFound("Cliente não encontrado.");
+    }
+
+    livro.DataDeEmprestimo = novoEmprestimo.DataDeEmprestimo;
+    livro.DataDeDevolucao = novoEmprestimo.DataDeDevolucao;
+
+    await db.Emprestimos.AddAsync(novoEmprestimo);
+    await db.SaveChangesAsync();
+    return Results.Created($"/emprestimos/{novoEmprestimo.IdEmprestimo}", novoEmprestimo);
+});
+
+// Consulta de Empréstimos Ativos
+app.MapGet("/api/emprestimos/ativos", async (AppDataContext db) =>
+{
+    var emprestimosAtivos = await db.Emprestimos
+        .Where(e => e.DataDeDevolucao == null) // Filtrar apenas os empréstimos sem data de devolução
+        .ToListAsync();
+
+    if (emprestimosAtivos.Count == 0)
+    {
+        return Results.NotFound("Nenhum empréstimo ativo encontrado.");
+    }
+
+    return Results.Ok(emprestimosAtivos);
+});
+
+// Registro de Devoluções
+app.MapPost("/api/emprestimos/devolver", async ([FromBody] Emprestimo devolucao, AppDataContext db) =>
+{
+    // Verifica se o empréstimo existe e está ativo
+    var emprestimoAtivo = await db.Emprestimos
+        .FirstOrDefaultAsync(e => e.IdEmprestimo == devolucao.IdEmprestimo && e.DataDeDevolucao == null);
+
+    if (emprestimoAtivo == null)
+    {
+        return Results.NotFound("Empréstimo não encontrado ou já devolvido.");
+    }
+
+    // Atualiza a data de devolução
+    emprestimoAtivo.DataDeDevolucao = DateTime.Now;
+
+    // Atualiza as informações do livro
+    var livro = await db.Livros.FirstOrDefaultAsync(l => l.Titulo == emprestimoAtivo.Titulo);
+    if (livro != null)
+    {
+        livro.DataDeEmprestimo = null; // Reseta a data de empréstimo
+        livro.DataDeDevolucao = null;  // Reseta a data de devolução
+    }
+
+    await db.SaveChangesAsync();
+    return Results.Ok($"Livro '{livro.Titulo}' devolvido com sucesso.");
+});
+
+
+// Inicia a aplicação
 app.Run();
