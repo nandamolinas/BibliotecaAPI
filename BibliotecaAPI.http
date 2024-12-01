@@ -1,5 +1,5 @@
 ### Requisição para a raiz da aplicação
-http://localhost:5200
+GET http://localhost:5200
 
 
 ### - Cadastro de Clientes 
@@ -14,9 +14,9 @@ Content-Type: application/json
 }
 
 
-
 ### - Consulta de Clientes 
 GET http://localhost:5200/api/clientes/listar
+
 
 ### - Atualização de Dados de Clientes 
 PUT http://localhost:5200/api/clientes/atualizar/30
@@ -38,64 +38,55 @@ POST http://localhost:5200/api/livros/cadastrar
 Content-Type: application/json
 
 {   
-
     "titulo": "Teste1",
     "autor": "Teste1",
-    "anoDePublicacao": 2002,
-    "dataDeEmprestimo": null,
-    "dataDeDevolucao": null
+    "anoDePublicacao": 2002
 }
 
 
 ### Consulta de Livros
 GET http://localhost:5200/api/livros/listar
 
-### Buscar Livros
-GET http://localhost:5200/api/livros/1984
 
-// Guilherme
+### Buscar Livros
+GET http://localhost:5200/api/livros/buscar/10
+
+
 ### Atualização de Dados de Livros
-PUT http://localhost:5200/api/livros/alterar/4adfce8e-c7f4-4acf-867b-f4c493d2a4c3
+PUT http://localhost:5200/api/livros/alterar/10
 Content-Type: application/json
 
 {
     "titulo": "Dom Quixote",
     "autor": "Miguel de Cervantes",
-    "anoDePublicacao": 1605,
-    "dataDeEmprestimo": null,
-    "dataDeDevolucao": null,
-    "cliente": null
+    "anoDePublicacao": 1605
 }
 
+
 ### Exclusão de Livro
-DELETE http://localhost:5200/api/livros/deletar/f8b9b46f-d416-4c3d-824f-1dd53ca5995b
+DELETE http://localhost:5200/api/livros/deletar/10
+
 
 ### - Registro De Empréstimo
 POST http://localhost:5200/api/emprestimos/cadastrar
 Content-Type: application/json
 
 {
-    "IdLivro": 1,
-    "ClienteId": 1,
-    "DataDeEmprestimo": "2024-10-19",
-    "DataDeDevolucao": "2024-10-23"
+  "ClienteId": 20,
+  "LivroId": 11,
+  "DataDeEmprestimo": "2024-12-01T00:00:00",
+  "DataDeDevolucao": null
 }
 
 
- 
-### - // - Registro de Devoluções 
+### - Registro de Devoluções 
 POST http://localhost:5200/api/emprestimos/devolver
 Content-Type: application/json
 
 {
-    "IdLivro": 3
+  "Id": 43
 }
 
 
-
-### - // - Consulta de Empréstimos Ativos 
+### - Consulta de Empréstimos Ativos 
 GET http://localhost:5200/api/emprestimos/listar
-
-
-
-

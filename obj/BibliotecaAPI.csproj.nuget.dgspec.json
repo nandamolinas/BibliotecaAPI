@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\_ws\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI.csproj": {}
+    "C:\\_ws\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI.csproj": {}
   },
   "projects": {
-    "C:\\_ws\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI.csproj": {
+    "C:\\_ws\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\_ws\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI.csproj",
+        "projectUniqueName": "C:\\_ws\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI.csproj",
         "projectName": "BibliotecaAPI",
-        "projectPath": "C:\\_ws\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI.csproj",
+        "projectPath": "C:\\_ws\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI.csproj",
         "packagesPath": "C:\\Users\\5480\\.nuget\\packages\\",
-        "outputPath": "C:\\_ws\\BibliotecaAPI\\BibliotecaAPI\\obj\\",
+        "outputPath": "C:\\_ws\\BibliotecaAPI\\BibliotecaAPI\\BibliotecaAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\5480\\AppData\\Roaming\\NuGet\\NuGet.Config"

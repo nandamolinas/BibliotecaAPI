@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BibliotecaAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class PrimeiraMigração : Migration
+    public partial class ArrumarRelacionamento : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,6 +27,21 @@ namespace BibliotecaAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Livros",
+                columns: table => new
+                {
+                    LivroId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Titulo = table.Column<string>(type: "TEXT", nullable: true),
+                    Autor = table.Column<string>(type: "TEXT", nullable: true),
+                    AnoDePublicacao = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Livros", x => x.LivroId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Emprestimos",
                 columns: table => new
                 {
@@ -40,34 +55,29 @@ namespace BibliotecaAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Emprestimos", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Livros",
-                columns: table => new
-                {
-                    LivroId = table.Column<string>(type: "TEXT", nullable: false),
-                    Titulo = table.Column<string>(type: "TEXT", nullable: true),
-                    Autor = table.Column<string>(type: "TEXT", nullable: true),
-                    AnoDePublicacao = table.Column<int>(type: "INTEGER", nullable: false),
-                    DataDeEmprestimo = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    DataDeDevolucao = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    ClienteId = table.Column<int>(type: "INTEGER", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Livros", x => x.LivroId);
                     table.ForeignKey(
-                        name: "FK_Livros_Clientes_ClienteId",
+                        name: "FK_Emprestimos_Clientes_ClienteId",
                         column: x => x.ClienteId,
                         principalTable: "Clientes",
-                        principalColumn: "ClienteId");
+                        principalColumn: "ClienteId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Emprestimos_Livros_LivroId",
+                        column: x => x.LivroId,
+                        principalTable: "Livros",
+                        principalColumn: "LivroId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Livros_ClienteId",
-                table: "Livros",
+                name: "IX_Emprestimos_ClienteId",
+                table: "Emprestimos",
                 column: "ClienteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Emprestimos_LivroId",
+                table: "Emprestimos",
+                column: "LivroId");
         }
 
         /// <inheritdoc />
@@ -77,10 +87,10 @@ namespace BibliotecaAPI.Migrations
                 name: "Emprestimos");
 
             migrationBuilder.DropTable(
-                name: "Livros");
+                name: "Clientes");
 
             migrationBuilder.DropTable(
-                name: "Clientes");
+                name: "Livros");
         }
     }
 }

@@ -1,13 +1,12 @@
-
 import { Cliente } from "./Cliente";
 
 export interface Livro {
-  livroId?: string;
-  titulo: string; // Alterado de 'nome' para 'titulo' para maior clareza
-  autor: string; // Adicionado o autor para complementar a entidade
-  anoDePublicacao?: number; // Propriedade opcional
-  DataDeEmprestimo? : string;
-  DataDeDevolucao? : string;
-  ClienteId? : number;
-  Cliente? : Cliente;
+  livroId: string; // Chave primária para o livro
+  titulo: string; // Título do livro
+  autor: string; // Autor do livro
+  anoDePublicacao: number; // Ano de publicação do livro
+  ClienteId?: number; // Relacionamento com o Cliente (opcional)
+  Cliente?: Cliente; // Referência ao Cliente que emprestou o livro
+  DataDeEmprestimo?: string; // Data de empréstimo do livro (opcional)
+  DataDeDevolucao?: string; // Data de devolução do livro (opcional)
 }

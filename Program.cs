@@ -1,13 +1,12 @@
-using API.Models;
+using BibliotecaAPI.Data;
 using BibliotecaAPI.Models;
+
 using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Configuração do DbContext
 builder.Services.AddDbContext<AppDataContext>();
-
 builder.Services.AddCors(
     options =>
         options.AddPolicy("Acesso Total",
@@ -16,12 +15,10 @@ builder.Services.AddCors(
                 .AllowAnyHeader()
                 .AllowAnyMethod())
 );
-
 var app = builder.Build();
-     
+
 app.MapGet("/", () => "API da Biblioteca");
 
-// GET: /api/clientes/listar
 app.MapGet("/api/clientes/listar", ([FromServices] AppDataContext ctx) =>
 {
     if (ctx.Clientes.Any())
@@ -31,7 +28,6 @@ app.MapGet("/api/clientes/listar", ([FromServices] AppDataContext ctx) =>
     return Results.NotFound();
 });
 
-// POST: /api/clientes/cadastrar
 app.MapPost("/api/clientes/cadastrar", ([FromBody] Cliente cliente, [FromServices] AppDataContext ctx) =>
 {
     if (ctx.Clientes.Any(c => c.ClienteId == cliente.ClienteId))
@@ -43,7 +39,6 @@ app.MapPost("/api/clientes/cadastrar", ([FromBody] Cliente cliente, [FromService
     return Results.Created($"/api/clientes/{cliente.ClienteId}", cliente);
 });
 
-// PUT: /api/clientes/atualizar/{id}
 app.MapPut("/api/clientes/atualizar/{id}", ([FromRoute] int id, [FromBody] Cliente clienteAlterado, [FromServices] AppDataContext ctx) =>
 {
     var cliente = ctx.Clientes.Find(id);
@@ -59,7 +54,6 @@ app.MapPut("/api/clientes/atualizar/{id}", ([FromRoute] int id, [FromBody] Clien
     return Results.Ok(cliente);
 });
 
-// DELETE: /api/clientes/excluir/{id}
 app.MapDelete("/api/clientes/excluir/{id}", ([FromRoute] int id, [FromServices] AppDataContext ctx) =>
 {
     var cliente = ctx.Clientes.Find(id);
@@ -72,7 +66,6 @@ app.MapDelete("/api/clientes/excluir/{id}", ([FromRoute] int id, [FromServices] 
     return Results.Ok(cliente);
 });
 
-// GET: /api/livros/listar
 app.MapGet("/api/livros/listar", ([FromServices] AppDataContext ctx) =>
 {
     if (ctx.Livros.Any())
@@ -82,10 +75,9 @@ app.MapGet("/api/livros/listar", ([FromServices] AppDataContext ctx) =>
     return Results.NotFound();
 });
 
-// GET: /api/livros/buscar/{id}
 app.MapGet("/api/livros/buscar/{id}", ([FromRoute] int id, [FromServices] AppDataContext ctx) =>
 {
-    var livro = ctx.Livros.Find(id);
+    var livro = ctx.Livros.Find(id);  // 'id' agora é do tipo 'int'
     if (livro == null)
     {
         return Results.NotFound();
@@ -93,7 +85,7 @@ app.MapGet("/api/livros/buscar/{id}", ([FromRoute] int id, [FromServices] AppDat
     return Results.Ok(livro);
 });
 
-// POST: /api/livros/cadastrar
+
 app.MapPost("/api/livros/cadastrar", ([FromBody] Livro livro, [FromServices] AppDataContext ctx) =>
 {
     ctx.Livros.Add(livro);
@@ -101,10 +93,9 @@ app.MapPost("/api/livros/cadastrar", ([FromBody] Livro livro, [FromServices] App
     return Results.Created($"/api/livros/{livro.LivroId}", livro);
 });
 
-// PUT: /api/livros/alterar/{id}
 app.MapPut("/api/livros/alterar/{id}", ([FromRoute] int id, [FromBody] Livro livroAlterado, [FromServices] AppDataContext ctx) =>
 {
-    var livro = ctx.Livros.Find(id);
+    var livro = ctx.Livros.Find(id);  // 'id' agora é do tipo 'int'
     if (livro == null)
     {
         return Results.NotFound();
@@ -116,10 +107,10 @@ app.MapPut("/api/livros/alterar/{id}", ([FromRoute] int id, [FromBody] Livro liv
     return Results.Ok(livro);
 });
 
-// DELETE: /api/livros/excluir/{id}
-app.MapDelete("/api/livros/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>
+
+app.MapDelete("/api/livros/deletar/{id}", ([FromRoute] int id, [FromServices] AppDataContext ctx) =>
 {
-    Livro? livro = ctx.Livros.Find(id);
+    var livro = ctx.Livros.Find(id);  // 'id' agora é do tipo 'int'
     if (livro == null)
     {
         return Results.NotFound();
@@ -128,53 +119,83 @@ app.MapDelete("/api/livros/deletar/{id}", ([FromRoute] string id, [FromServices]
     ctx.SaveChanges();
     return Results.Ok(livro);
 });
-//Listar empretimos
+
+
 app.MapGet("/api/emprestimos/listar", ([FromServices] AppDataContext ctx) =>
 {
-    var emprestimosAtivos = ctx.Emprestimos.Where(e => e.DataDeEmprestimo != null && e.DataDeDevolucao == null).ToList();
+    var emprestimosAtivos = ctx.Emprestimos
+        .Include(e => e.Cliente)
+        .Include(e => e.Livro)
+        .Where(e => e.DataDeEmprestimo != null && e.DataDeDevolucao == null)
+        .ToList();
     return Results.Ok(emprestimosAtivos);
 });
 
-
-// POST: /api/emprestimos/cadastrar
-app.MapPost("/api/emprestimos/cadastrar", ([FromBody] Emprestimo novoEmprestimo, [FromServices] AppDataContext ctx) =>
+app.MapPost("/api/emprestimos/cadastrar", async ([FromBody] Emprestimo novoEmprestimo, [FromServices] AppDataContext ctx) =>
 {
-    var cliente = ctx.Clientes.Find(novoEmprestimo.ClienteId);
-    var livro = ctx.Livros.Find(novoEmprestimo.LivroId);
-
-    if (cliente == null || livro == null)
+    if (novoEmprestimo == null || novoEmprestimo.ClienteId == 0 || novoEmprestimo.LivroId == 0)
     {
-        return Results.NotFound("Cliente ou livro não encontrado.");
-    }
-    if (livro.DataDeEmprestimo != null)
-    {
-        return Results.BadRequest("Livro já está emprestado.");
+        return Results.BadRequest("Dados do empréstimo são inválidos. ClienteId e LivroId são obrigatórios.");
     }
 
-    livro.DataDeEmprestimo = novoEmprestimo.DataDeEmprestimo;
-    livro.ClienteId = cliente.ClienteId;
-    ctx.SaveChanges();
+    var cliente = await ctx.Clientes.FindAsync(novoEmprestimo.ClienteId);
+    var livro = await ctx.Livros.FindAsync(novoEmprestimo.LivroId);
 
-    return Results.Ok(livro);
+    if (cliente == null)
+    {
+        return Results.NotFound($"Cliente com ID {novoEmprestimo.ClienteId} não encontrado.");
+    }
+
+    if (livro == null)
+    {
+        return Results.NotFound($"Livro com ID {novoEmprestimo.LivroId} não encontrado.");
+    }
+
+    // Adiciona o novo empréstimo
+    ctx.Emprestimos.Add(novoEmprestimo);
+    await ctx.SaveChangesAsync();
+
+    return Results.Created($"/api/emprestimos/{novoEmprestimo.Id}", novoEmprestimo);
 });
 
 
-// POST: /api/emprestimos/devolver
-app.MapPost("/api/emprestimos/devolver", ([FromBody] Emprestimo devolucao, [FromServices] AppDataContext ctx) =>
+app.MapPost("/api/emprestimos/devolver", async ([FromBody] Emprestimo devolucao, [FromServices] AppDataContext ctx) =>
 {
-    var emprestimo = ctx.Emprestimos.Find(devolucao.LivroId);  // Buscar na tabela Emprestimos
-    if (emprestimo == null)
+    // Verificar se o ID do empréstimo foi fornecido
+    if (devolucao?.Id == null)
     {
-        return Results.NotFound();
+        return Results.BadRequest("ID do empréstimo não foi fornecido.");
     }
 
-    emprestimo.DataDeDevolucao = DateTime.Now;  // Registrar a data de devolução
-    ctx.SaveChanges();
+    // Buscando o empréstimo pelo ID
+    var emprestimo = await ctx.Emprestimos.FindAsync(devolucao.Id);
 
+    // Verificar se o empréstimo foi encontrado
+    if (emprestimo == null)
+    {
+        return Results.NotFound("Empréstimo não encontrado.");
+    }
+
+    // Verificar se o livro já foi devolvido
+    if (emprestimo.DataDeDevolucao != null)
+    {
+        return Results.BadRequest("Este livro já foi devolvido.");
+    }
+
+    // Atualizando a data de devolução
+    emprestimo.DataDeDevolucao = DateTime.Now;
+
+    // Salvando as alterações no banco de dados
+    await ctx.SaveChangesAsync();
+
+    // Retornando a resposta com o empréstimo atualizado
     return Results.Ok(emprestimo);
 });
 
 
+
+
 app.UseCors("Acesso Total");
+
 app.Run();
 
