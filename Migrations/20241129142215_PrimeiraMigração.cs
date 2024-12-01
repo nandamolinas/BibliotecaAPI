@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BibliotecaAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class PrimeiraMigração : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,8 +17,8 @@ namespace BibliotecaAPI.Migrations
                 {
                     ClienteId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Nome = table.Column<string>(type: "TEXT", nullable: true),
-                    Cpf = table.Column<string>(type: "TEXT", nullable: true),
+                    Nome = table.Column<string>(type: "TEXT", nullable: false),
+                    Cpf = table.Column<string>(type: "TEXT", nullable: false),
                     DataDeInicio = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -30,26 +30,25 @@ namespace BibliotecaAPI.Migrations
                 name: "Emprestimos",
                 columns: table => new
                 {
-                    IdEmprestimo = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     ClienteId = table.Column<int>(type: "INTEGER", nullable: false),
-                    IdLivro = table.Column<int>(type: "INTEGER", nullable: false),
+                    LivroId = table.Column<int>(type: "INTEGER", nullable: false),
                     DataDeEmprestimo = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    DataDeDevolucao = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    DataDeDevolucao = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Emprestimos", x => x.IdEmprestimo);
+                    table.PrimaryKey("PK_Emprestimos", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Livros",
                 columns: table => new
                 {
-                    IdLivro = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Titulo = table.Column<string>(type: "TEXT", nullable: false),
-                    Autor = table.Column<string>(type: "TEXT", nullable: false),
+                    LivroId = table.Column<string>(type: "TEXT", nullable: false),
+                    Titulo = table.Column<string>(type: "TEXT", nullable: true),
+                    Autor = table.Column<string>(type: "TEXT", nullable: true),
                     AnoDePublicacao = table.Column<int>(type: "INTEGER", nullable: false),
                     DataDeEmprestimo = table.Column<DateTime>(type: "TEXT", nullable: true),
                     DataDeDevolucao = table.Column<DateTime>(type: "TEXT", nullable: true),
@@ -57,21 +56,31 @@ namespace BibliotecaAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Livros", x => x.IdLivro);
+                    table.PrimaryKey("PK_Livros", x => x.LivroId);
+                    table.ForeignKey(
+                        name: "FK_Livros_Clientes_ClienteId",
+                        column: x => x.ClienteId,
+                        principalTable: "Clientes",
+                        principalColumn: "ClienteId");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Livros_ClienteId",
+                table: "Livros",
+                column: "ClienteId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Clientes");
-
-            migrationBuilder.DropTable(
                 name: "Emprestimos");
 
             migrationBuilder.DropTable(
                 name: "Livros");
+
+            migrationBuilder.DropTable(
+                name: "Clientes");
         }
     }
 }

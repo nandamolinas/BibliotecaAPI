@@ -4,17 +4,14 @@ namespace BibliotecaAPI.Models;
 
 public class Cliente
 {
-public Cliente()
+    public Cliente()
     {
-        DataDeInicio= DateTime.Now;
+        DataDeInicio = DateTime.Now;
     }
 
-    public int? ClienteId{ get; set;}
-    public string? Nome{ get; set;}
-    public string? Cpf{ get; set;}
-    public DateTime DataDeInicio{ get; set;}
-
-
-
-
+    public int ClienteId { get; set; } // Propriedade não-nullable para chave primária
+    public string Nome { get; set; } // Propriedade obrigatória
+    public string Cpf { get; set; } // Propriedade obrigatória
+    public DateTime DataDeInicio { get; set; } // Data automática
 }
+

@@ -1,217 +1,180 @@
+using API.Models;
 using BibliotecaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<AppDataContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Configuração do DbContext
+builder.Services.AddDbContext<AppDataContext>();
+
+builder.Services.AddCors(
+    options =>
+        options.AddPolicy("Acesso Total",
+            configs => configs
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod())
+);
 
 var app = builder.Build();
+     
+app.MapGet("/", () => "API da Biblioteca");
 
-using (var scope = app.Services.CreateScope())
+// GET: /api/clientes/listar
+app.MapGet("/api/clientes/listar", ([FromServices] AppDataContext ctx) =>
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDataContext>();
-    db.Database.EnsureCreated();
-
-    if (!db.Clientes.Any())
+    if (ctx.Clientes.Any())
     {
-        var clientes = new List<Cliente>
-        {
-            new Cliente() { ClienteId = 1, Nome = "Maria Oliveira", Cpf = "123.456.789-00", DataDeInicio = new DateTime(2022, 5, 20) },
-            new Cliente() { ClienteId = 2, Nome = "João Silva", Cpf = "987.654.321-11", DataDeInicio = new DateTime(2023, 1, 10) },
-            new Cliente() { ClienteId = 3, Nome = "Ana Costa", Cpf = "321.654.987-22", DataDeInicio = new DateTime(2021, 9, 5) },
-            new Cliente() { ClienteId = 4, Nome = "Pedro Santos", Cpf = "456.789.123-33", DataDeInicio = new DateTime(2020, 7, 15) },
-            new Cliente() { ClienteId = 5, Nome = "Lucas Ferreira", Cpf = "654.321.987-44", DataDeInicio = new DateTime(2023, 3, 25) }
-        };
-
-        var livros = new List<Livro>
-        {
-            new Livro() { IdLivro = 1, Titulo = "Dom Quixote", Autor = "Miguel de Cervantes", AnoDePublicacao = 1600 },
-            new Livro() { IdLivro = 2, Titulo = "1984", Autor = "George Orwell", AnoDePublicacao = 1949 },
-            new Livro() { IdLivro = 3, Titulo = "O Senhor dos Anéis", Autor = "J.R.R. Tolkien", AnoDePublicacao = 1954 },
-            new Livro() { IdLivro = 4, Titulo = "Cem Anos de Solidão", Autor = "Gabriel García Márquez", AnoDePublicacao = 1967 },
-            new Livro() { IdLivro = 5, Titulo = "O Grande Gatsby", Autor = "F. Scott Fitzgerald", AnoDePublicacao = 1925 },
-            new Livro() { IdLivro = 6, Titulo = "Orgulho e Preconceito", Autor = "Jane Austen", AnoDePublicacao = 1813 },
-            new Livro() { IdLivro = 7, Titulo = "Moby Dick", Autor = "Herman Melville", AnoDePublicacao = 1851 },
-            new Livro() { IdLivro = 8, Titulo = "Guerra e Paz", Autor = "Liev Tolstói", AnoDePublicacao = 1869 },
-            new Livro() { IdLivro = 9, Titulo = "Crime e Castigo", Autor = "Fiódor Dostoiévski", AnoDePublicacao = 1866 },
-            new Livro() { IdLivro = 10, Titulo = "O Apanhador no Campo de Centeio", Autor = "J.D. Salinger", AnoDePublicacao = 1951 }
-        };
-
-        db.Clientes.AddRange(clientes);
-        db.Livros.AddRange(livros);
-        db.SaveChanges();
+        return Results.Ok(ctx.Clientes.ToList());
     }
-}
-
-app.MapGet("/", () => "Bem-vindo à API da Biblioteca!");
-
-
-
-
-app.MapGet("/api/clientes/listar", async (AppDataContext db) =>
-{
-    return Results.Ok(await db.Clientes.ToListAsync());
+    return Results.NotFound();
 });
 
-app.MapPut("/api/clientes/atualizar/{clienteId}", async ([FromRoute] int clienteId, [FromBody] Cliente clienteAlterado, AppDataContext db) =>
+// POST: /api/clientes/cadastrar
+app.MapPost("/api/clientes/cadastrar", ([FromBody] Cliente cliente, [FromServices] AppDataContext ctx) =>
 {
-    var cliente = await db.Clientes.FindAsync(clienteId);
+    if (ctx.Clientes.Any(c => c.ClienteId == cliente.ClienteId))
+    {
+        return Results.BadRequest("Cliente já cadastrado.");
+    }
+    ctx.Clientes.Add(cliente);
+    ctx.SaveChanges();
+    return Results.Created($"/api/clientes/{cliente.ClienteId}", cliente);
+});
+
+// PUT: /api/clientes/atualizar/{id}
+app.MapPut("/api/clientes/atualizar/{id}", ([FromRoute] int id, [FromBody] Cliente clienteAlterado, [FromServices] AppDataContext ctx) =>
+{
+    var cliente = ctx.Clientes.Find(id);
     if (cliente == null)
     {
-        return Results.NotFound("Cliente não encontrado.");
+        return Results.NotFound();
     }
-
     cliente.Nome = clienteAlterado.Nome;
     cliente.Cpf = clienteAlterado.Cpf;
     cliente.DataDeInicio = clienteAlterado.DataDeInicio;
 
-    await db.SaveChangesAsync();
+    ctx.SaveChanges();
     return Results.Ok(cliente);
 });
 
-app.MapDelete("/api/clientes/excluir/{clienteId}", async ([FromRoute] int clienteId, AppDataContext db) =>
+// DELETE: /api/clientes/excluir/{id}
+app.MapDelete("/api/clientes/excluir/{id}", ([FromRoute] int id, [FromServices] AppDataContext ctx) =>
 {
-    var cliente = await db.Clientes.FindAsync(clienteId);
+    var cliente = ctx.Clientes.Find(id);
     if (cliente == null)
     {
-        return Results.NotFound("Cliente não encontrado.");
+        return Results.NotFound();
     }
-
-    db.Clientes.Remove(cliente);
-    await db.SaveChangesAsync();
-    return Results.Ok($"Cliente {cliente.Nome} excluído com sucesso.");
+    ctx.Clientes.Remove(cliente);
+    ctx.SaveChanges();
+    return Results.Ok(cliente);
 });
 
-app.MapPost("/api/clientes/cadastrar", async (Cliente cliente, AppDataContext context) =>
+// GET: /api/livros/listar
+app.MapGet("/api/livros/listar", ([FromServices] AppDataContext ctx) =>
 {
-    if (await context.Clientes.AnyAsync(c => c.ClienteId == cliente.ClienteId))
+    if (ctx.Livros.Any())
     {
-        return Results.BadRequest("ClienteId já existe.");
+        return Results.Ok(ctx.Livros.ToList());
     }
-
-    await context.Clientes.AddAsync(cliente);
-    await context.SaveChangesAsync();
-    return Results.Created($"/api/clientes/{cliente.ClienteId}", cliente);
+    return Results.NotFound();
 });
 
-
-app.MapGet("/api/livros/listar", async (AppDataContext db) =>
+// GET: /api/livros/buscar/{id}
+app.MapGet("/api/livros/buscar/{id}", ([FromRoute] int id, [FromServices] AppDataContext ctx) =>
 {
-    return Results.Ok(await db.Livros.ToListAsync());
-});
-
-app.MapGet("/api/livros/{titulo}", async ([FromRoute] string titulo, AppDataContext db) =>
-{
-    var livro = await db.Livros.FirstOrDefaultAsync(l => l.Titulo == titulo);
+    var livro = ctx.Livros.Find(id);
     if (livro == null)
     {
-        return Results.NotFound("Livro não encontrado.");
+        return Results.NotFound();
     }
-
     return Results.Ok(livro);
 });
 
-app.MapPut("/api/livros/atualizar/{titulo}", async ([FromRoute] string titulo, [FromBody] Livro livroAlterado, AppDataContext db) =>
+// POST: /api/livros/cadastrar
+app.MapPost("/api/livros/cadastrar", ([FromBody] Livro livro, [FromServices] AppDataContext ctx) =>
 {
-    var livro = await db.Livros.FirstOrDefaultAsync(l => l.Titulo == titulo);
+    ctx.Livros.Add(livro);
+    ctx.SaveChanges();
+    return Results.Created($"/api/livros/{livro.LivroId}", livro);
+});
+
+// PUT: /api/livros/alterar/{id}
+app.MapPut("/api/livros/alterar/{id}", ([FromRoute] int id, [FromBody] Livro livroAlterado, [FromServices] AppDataContext ctx) =>
+{
+    var livro = ctx.Livros.Find(id);
     if (livro == null)
     {
-        return Results.NotFound("Livro não encontrado.");
+        return Results.NotFound();
     }
-
+    livro.Titulo = livroAlterado.Titulo;
     livro.Autor = livroAlterado.Autor;
     livro.AnoDePublicacao = livroAlterado.AnoDePublicacao;
-    livro.DataDeEmprestimo = livroAlterado.DataDeEmprestimo;
-    livro.DataDeDevolucao = livroAlterado.DataDeDevolucao;
-
-    await db.SaveChangesAsync();
+    ctx.SaveChanges();
     return Results.Ok(livro);
 });
 
-app.MapDelete("/api/livros/deletar/{titulo}", async ([FromRoute] string titulo, AppDataContext db) =>
+// DELETE: /api/livros/excluir/{id}
+app.MapDelete("/api/livros/deletar/{id}", ([FromRoute] string id, [FromServices] AppDataContext ctx) =>
 {
-    var livro = await db.Livros.FirstOrDefaultAsync(l => l.Titulo == titulo);
+    Livro? livro = ctx.Livros.Find(id);
     if (livro == null)
     {
-        return Results.NotFound("Livro não encontrado.");
+        return Results.NotFound();
     }
-
-    db.Livros.Remove(livro);
-    await db.SaveChangesAsync();
-    return Results.Ok($"Livro {livro.Titulo} excluído com sucesso.");
+    ctx.Livros.Remove(livro);
+    ctx.SaveChanges();
+    return Results.Ok(livro);
 });
-
-app.MapPost("/api/livros/cadastrar", async (Livro livro, AppDataContext context) =>
+//Listar empretimos
+app.MapGet("/api/emprestimos/listar", ([FromServices] AppDataContext ctx) =>
 {
-    context.Livros.Add(livro);
-    await context.SaveChangesAsync();
-    return Results.Created($"/api/livros/{livro.IdLivro}", livro); // Use IdLivro aqui
-});
-
-
-
-app.MapPost("/api/emprestimos/cadastrar", async ([FromBody] Emprestimo novoEmprestimo, AppDataContext db) =>
-{
-    var cliente = await db.Clientes.FindAsync(novoEmprestimo.ClienteId);
-    var livro = await db.Livros.FindAsync(novoEmprestimo.IdLivro);
-
-    if (cliente == null)
-    {
-        return Results.NotFound("Cliente não encontrado.");
-    }
-
-    if (livro == null)
-    {
-        return Results.NotFound("Livro não encontrado.");
-    }
-
-    if (livro.DataDeEmprestimo != null)
-    {
-        return Results.BadRequest("Este livro já está emprestado.");
-    }
-
-    livro.DataDeEmprestimo = novoEmprestimo.DataDeEmprestimo;
-    livro.DataDeDevolucao = novoEmprestimo.DataDeDevolucao;
-    livro.ClienteId = cliente.ClienteId;
-
-    await db.SaveChangesAsync();
-    return Results.Ok($"Empréstimo do livro {livro.Titulo} para o cliente {cliente.Nome} registrado com sucesso.");
-});
-
-app.MapPost("/api/emprestimos/devolver", async ([FromBody] Emprestimo devolucao, AppDataContext db) =>
-{
-    var livro = await db.Livros.FindAsync(devolucao.IdLivro);
-    if (livro == null)
-    {
-        return Results.NotFound("Livro não encontrado.");
-    }
-
-    livro.DataDeEmprestimo = null;
-    livro.DataDeDevolucao = null;
-    livro.ClienteId = null;
-
-    await db.SaveChangesAsync();
-    return Results.Ok($"Devolução do livro {livro.Titulo} registrada com sucesso.");
-});
-
-app.MapGet("/api/emprestimos/ativos", async (AppDataContext db) =>
-{
-    var emprestimosAtivos = await db.Livros.Where(l => l.DataDeEmprestimo != null).ToListAsync();
+    var emprestimosAtivos = ctx.Emprestimos.Where(e => e.DataDeEmprestimo != null && e.DataDeDevolucao == null).ToList();
     return Results.Ok(emprestimosAtivos);
 });
 
-app.MapGet("/api/livros/resumo", async (AppDataContext db) =>
+
+// POST: /api/emprestimos/cadastrar
+app.MapPost("/api/emprestimos/cadastrar", ([FromBody] Emprestimo novoEmprestimo, [FromServices] AppDataContext ctx) =>
 {
-    var totalLivros = await db.Livros.CountAsync();
-    var totalEmprestimos = await db.Livros.CountAsync(l => l.DataDeEmprestimo != null);
-    var resumo = new
+    var cliente = ctx.Clientes.Find(novoEmprestimo.ClienteId);
+    var livro = ctx.Livros.Find(novoEmprestimo.LivroId);
+
+    if (cliente == null || livro == null)
     {
-        TotalLivros = totalLivros,
-        TotalEmprestimos = totalEmprestimos
-    };
-    return Results.Ok(resumo);
+        return Results.NotFound("Cliente ou livro não encontrado.");
+    }
+    if (livro.DataDeEmprestimo != null)
+    {
+        return Results.BadRequest("Livro já está emprestado.");
+    }
+
+    livro.DataDeEmprestimo = novoEmprestimo.DataDeEmprestimo;
+    livro.ClienteId = cliente.ClienteId;
+    ctx.SaveChanges();
+
+    return Results.Ok(livro);
 });
 
+
+// POST: /api/emprestimos/devolver
+app.MapPost("/api/emprestimos/devolver", ([FromBody] Emprestimo devolucao, [FromServices] AppDataContext ctx) =>
+{
+    var emprestimo = ctx.Emprestimos.Find(devolucao.LivroId);  // Buscar na tabela Emprestimos
+    if (emprestimo == null)
+    {
+        return Results.NotFound();
+    }
+
+    emprestimo.DataDeDevolucao = DateTime.Now;  // Registrar a data de devolução
+    ctx.SaveChanges();
+
+    return Results.Ok(emprestimo);
+});
+
+
+app.UseCors("Acesso Total");
 app.Run();
+
